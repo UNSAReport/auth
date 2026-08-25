@@ -1,0 +1,73 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.5.10/schema.json",
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
+  "files": {
+    "ignoreUnknown": false,
+    "includes": [
+      "**",
+      "!**/node_modules",
+      "!src/db/migrations",
+      "!bun.lock",
+      "!flake.lock"
+    ]
+  },
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "indentWidth": 2
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "preset": "all",
+      "correctness": {
+        "noNodejsModules": "off"
+      },
+      "complexity": {
+        "noExcessiveLinesPerFunction": "off"
+      },
+      "suspicious": {
+        "noConsole": "off"
+      },
+      "style": {
+        "noDefaultExport": "off",
+        "noProcessEnv": "off",
+        "noMagicNumbers": "off",
+        "noTernary": "off",
+        "noSubstr": "off",
+        "useNamingConvention": "off",
+        "noExcessiveClassesPerFile": "off"
+      }
+    }
+  },
+  "javascript": {
+    "globals": ["bun", "Bun"],
+    "formatter": {
+      "quoteStyle": "single"
+    }
+  },
+  "overrides": [
+    {
+      "includes": ["tests/**"],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noUnresolvedImports": "off"
+          }
+        }
+      }
+    }
+  ],
+  "assist": {
+    "enabled": true,
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
+  }
+}
