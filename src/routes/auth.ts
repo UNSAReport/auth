@@ -125,7 +125,9 @@ authApp.get('/auth/github/callback', (c) => handleOAuthCallback(c, 'github'));
 
 // POST /auth/refresh
 authApp.post('/auth/refresh', async (c) => {
-  const body = await c.req.json<{ refresh_token?: string }>().catch(() => ({}));
+  const body = await c.req
+    .json<{ refresh_token?: string }>()
+    .catch(() => ({}) as { refresh_token?: string });
   const refreshTokenInput = body.refresh_token || getCookie(c, 'refresh_token');
 
   if (!refreshTokenInput) {
@@ -182,7 +184,9 @@ authApp.post('/auth/refresh', async (c) => {
 
 // POST /auth/logout
 authApp.post('/auth/logout', async (c) => {
-  const body = await c.req.json<{ refresh_token?: string }>().catch(() => ({}));
+  const body = await c.req
+    .json<{ refresh_token?: string }>()
+    .catch(() => ({}) as { refresh_token?: string });
   const refreshTokenInput = body.refresh_token || getCookie(c, 'refresh_token');
 
   if (refreshTokenInput) {

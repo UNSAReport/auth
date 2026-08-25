@@ -82,7 +82,7 @@ rolesApp.get('/auth/roles/:subApp', rolesAuthMiddleware, async (c) => {
 rolesApp.post('/auth/roles', rolesAuthMiddleware, async (c) => {
   const body = await c.req
     .json<{ userId?: string; subApp?: string; role?: Role }>()
-    .catch(() => ({}));
+    .catch(() => ({}) as { userId?: string; subApp?: string; role?: Role });
 
   const { userId, subApp, role } = body;
 
@@ -133,7 +133,7 @@ rolesApp.post('/auth/roles', rolesAuthMiddleware, async (c) => {
 rolesApp.delete('/auth/roles', rolesAuthMiddleware, async (c) => {
   const body = await c.req
     .json<{ userId?: string; subApp?: string }>()
-    .catch(() => ({}));
+    .catch(() => ({}) as { userId?: string; subApp?: string });
 
   const { userId, subApp } = body;
 
