@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "skills": {
+    "interview-me": {
+      "source": "christianmz565/skills",
+      "sourceType": "github",
+      "skillPath": "interview-me/SKILL.md",
+      "computedHash": "efded91ac7f7626239b338ce8622afeb557151b86532b632f3c9eb5b2ff9048f"
+    },
+    "session-handoff": {
+      "source": "christianmz565/skills",
+      "sourceType": "github",
+      "skillPath": "session-handoff/SKILL.md",
+      "computedHash": "3f6a903733c471f265cc0bbedcccc7ff382e3a6c8c6d555a6fed96b398100682"
+    }
+  }
+}
