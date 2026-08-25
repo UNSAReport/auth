@@ -3,9 +3,9 @@ import type { MiddlewareHandler } from 'hono';
 import { getCookie } from 'hono/cookie';
 import { db } from '../db/index.ts';
 import { type PersonalAccessToken, users } from '../db/schema.ts';
-import { verifyAccessToken } from '../lib/jwt.ts';
+import { getUserRoles, verifyAccessToken } from '../lib/jwt.ts';
 import { verifyPAT } from '../lib/tokens.ts';
-import type { AccessTokenClaims, AuthUser } from '../types.ts';
+import type { AccessTokenClaims, AuthUser, Role } from '../types.ts';
 
 declare module 'hono' {
   interface ContextVariableMap {
@@ -13,6 +13,8 @@ declare module 'hono' {
     authType: 'jwt' | 'pat';
     pat?: PersonalAccessToken;
     jwtClaims?: AccessTokenClaims;
+    roles: Record<string, Role>;
+    isSuperAdmin?: boolean;
   }
 }
 
@@ -44,6 +46,7 @@ export const authMiddleware: MiddlewareHandler = async (c, next) => {
     c.set('user', patResult.user as AuthUser);
     c.set('pat', patResult.pat);
     c.set('authType', 'pat');
+    c.set('roles', await getUserRoles(patResult.user.id));
     await next();
     return;
   }
@@ -65,6 +68,7 @@ export const authMiddleware: MiddlewareHandler = async (c, next) => {
     c.set('user', userRecord as AuthUser);
     c.set('jwtClaims', claims);
     c.set('authType', 'jwt');
+    c.set('roles', claims.roles);
     await next();
   } catch (err: unknown) {
     const errorMessage =

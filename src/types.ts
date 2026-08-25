@@ -1,11 +1,15 @@
+export type Role = 'user' | 'admin';
+
 export interface UserPayload {
   sub: string;
   email: string;
   name: string;
   picture?: string | null;
+  roles?: Record<string, Role>;
 }
 
 export interface AccessTokenClaims extends UserPayload {
+  roles: Record<string, Role>;
   iss: string;
   iat: number;
   exp: number;

@@ -25,7 +25,8 @@
     "rules": {
       "preset": "all",
       "correctness": {
-        "noNodejsModules": "off"
+        "noNodejsModules": "off",
+        "useQwikValidLexicalScope": "off"
       },
       "complexity": {
         "noExcessiveLinesPerFunction": "off"

@@ -1,5 +1,6 @@
 import {
   boolean,
+  index,
   pgTable,
   text,
   timestamp,
@@ -71,9 +72,29 @@ export const signingKeys = pgTable('signing_keys', {
   rotatedAt: timestamp('rotated_at', { withTimezone: true }),
 });
 
+export const userRoles = pgTable(
+  'user_roles',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    subApp: text('sub_app').notNull(),
+    role: text('role').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
+  },
+  (table) => [
+    unique('user_roles_user_sub_app_unique').on(table.userId, table.subApp),
+    index('user_roles_user_id_sub_app_idx').on(table.userId, table.subApp),
+  ],
+);
+
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type OAuthAccount = typeof oauthAccounts.$inferSelect;
 export type RefreshToken = typeof refreshTokens.$inferSelect;
 export type PersonalAccessToken = typeof personalAccessTokens.$inferSelect;
 export type SigningKey = typeof signingKeys.$inferSelect;
+export type UserRole = typeof userRoles.$inferSelect;
+export type NewUserRole = typeof userRoles.$inferInsert;

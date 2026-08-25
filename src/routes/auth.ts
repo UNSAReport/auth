@@ -7,7 +7,7 @@ import { config } from '../config.ts';
 import { db } from '../db/index.ts';
 import { users } from '../db/schema.ts';
 import { generateRandomHex } from '../lib/hash.ts';
-import { signAccessToken } from '../lib/jwt.ts';
+import { getUserRoles, signAccessToken } from '../lib/jwt.ts';
 import { providerRegistry, upsertOAuthUser } from '../lib/oauth.ts';
 import {
   createRefreshToken,
@@ -80,12 +80,14 @@ async function handleOAuthCallback(c: Context, providerName: string) {
   try {
     const oauthUserInfo = await provider.exchangeCode(code);
     const user = await upsertOAuthUser(providerName, oauthUserInfo);
+    const roles = await getUserRoles(user.id);
 
     const accessToken = await signAccessToken({
       sub: user.id,
       email: user.email,
       name: user.name,
       picture: user.picture,
+      roles,
     });
 
     const refreshToken = await createRefreshToken(user.id);
@@ -142,11 +144,13 @@ authApp.post('/auth/refresh', async (c) => {
       return c.json({ error: 'Unauthorized', message: 'User not found' }, 401);
     }
 
+    const roles = await getUserRoles(user.id);
     const accessToken = await signAccessToken({
       sub: user.id,
       email: user.email,
       name: user.name,
       picture: user.picture,
+      roles,
     });
 
     setCookie(c, 'refresh_token', newRefreshToken, {
@@ -196,6 +200,7 @@ authApp.get('/auth/me', authMiddleware, (c) => {
   const authType = c.get('authType');
   const jwtClaims = c.get('jwtClaims');
   const pat = c.get('pat');
+  const roles = c.get('roles');
 
   return c.json({
     user: {
@@ -207,6 +212,7 @@ authApp.get('/auth/me', authMiddleware, (c) => {
       updatedAt: user.updatedAt,
     },
     auth_type: authType,
+    roles,
     ...(authType === 'jwt' ? { jwt_claims: jwtClaims } : {}),
     ...(authType === 'pat' && pat
       ? { pat_info: { id: pat.id, name: pat.name, scopes: pat.scopes } }

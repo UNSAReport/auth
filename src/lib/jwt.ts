@@ -8,9 +8,20 @@ import {
 } from 'jose';
 import { config } from '../config.ts';
 import { db } from '../db/index.ts';
-import { signingKeys } from '../db/schema.ts';
-import type { AccessTokenClaims, UserPayload } from '../types.ts';
+import { signingKeys, userRoles } from '../db/schema.ts';
+import type { AccessTokenClaims, Role, UserPayload } from '../types.ts';
 import { getOrGenerateActiveKey } from './keys.ts';
+
+export async function getUserRoles(
+  userId: string,
+): Promise<Record<string, Role>> {
+  const rows = await db
+    .select({ subApp: userRoles.subApp, role: userRoles.role })
+    .from(userRoles)
+    .where(eq(userRoles.userId, userId));
+
+  return Object.fromEntries(rows.map((r) => [r.subApp, r.role as Role]));
+}
 
 export async function signAccessToken(user: UserPayload): Promise<string> {
   const activeKey = await getOrGenerateActiveKey();
@@ -26,6 +37,7 @@ export async function signAccessToken(user: UserPayload): Promise<string> {
     email: user.email,
     name: user.name,
     picture: user.picture || null,
+    roles: user.roles || {},
     type: 'access',
   })
     .setProtectedHeader({

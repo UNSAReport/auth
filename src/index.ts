@@ -5,6 +5,7 @@ import { getOrGenerateActiveKey } from './lib/keys.ts';
 import { authApp } from './routes/auth.ts';
 import { jwksApp } from './routes/jwks.ts';
 import { patApp } from './routes/pat.ts';
+import { rolesApp } from './routes/roles.ts';
 
 const app = new Hono();
 
@@ -39,6 +40,7 @@ getOrGenerateActiveKey().catch((err) => {
 app.route('/', jwksApp);
 app.route('/', authApp);
 app.route('/', patApp);
+app.route('/', rolesApp);
 
 // Health check / root endpoint
 app.get('/', (c) =>
@@ -57,6 +59,11 @@ app.get('/', (c) =>
       'POST /auth/pat',
       'GET /auth/pat',
       'DELETE /auth/pat/:id',
+      'POST /auth/roles',
+      'DELETE /auth/roles',
+      'GET /auth/roles/me',
+      'GET /auth/roles/:subApp',
+      'GET /auth/roles/user/:userId',
       'GET /.well-known/jwks.json',
       'POST /auth/keys/rotate',
     ],
