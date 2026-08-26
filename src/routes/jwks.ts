@@ -4,7 +4,6 @@ import { getAllActivePublicKeys, rotateKeys } from '@/lib/keys';
 
 const jwksApp = new Hono();
 
-// Public JWKS Endpoint
 jwksApp.get('/.well-known/jwks.json', async (c) => {
   const keys = await getAllActivePublicKeys();
   return c.json({ keys }, 200, {
@@ -12,7 +11,6 @@ jwksApp.get('/.well-known/jwks.json', async (c) => {
   });
 });
 
-// Key Rotation Endpoint (Admin only)
 jwksApp.post('/auth/keys/rotate', async (c) => {
   const authHeader = c.req.header('Authorization');
   const adminHeader = c.req.header('X-Admin-Key');

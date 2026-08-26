@@ -9,6 +9,12 @@ import type { Role } from '@/types';
 
 const rolesApp = new Hono();
 
+/**
+ * Middleware that authenticates admin requests via X-Admin-Key header or falls back to standard auth middleware.
+ *
+ * @param c - Hono context object.
+ * @param next - Next middleware handler function.
+ */
 const rolesAuthMiddleware: MiddlewareHandler = async (c, next) => {
   const adminHeader = c.req.header('X-Admin-Key');
   if (adminHeader && adminHeader === config.adminApiKey) {
@@ -20,6 +26,13 @@ const rolesAuthMiddleware: MiddlewareHandler = async (c, next) => {
   return authMiddleware(c, next);
 };
 
+/**
+ * Checks if the context user is authorized as an administrator for a target sub-app.
+ *
+ * @param c - Hono context object.
+ * @param subApp - Name of the sub-app to check admin authorization for.
+ * @returns True if super admin or has admin role for sub-app, false otherwise.
+ */
 function authorizeAdminForSubApp(c: Context, subApp: string): boolean {
   if (c.get('isSuperAdmin')) {
     return true;
@@ -28,6 +41,12 @@ function authorizeAdminForSubApp(c: Context, subApp: string): boolean {
   return roles[subApp] === 'admin';
 }
 
+/**
+ * Checks if the context user has an admin role in any sub-app or is a super admin.
+ *
+ * @param c - Hono context object.
+ * @returns True if user possesses any admin role, false otherwise.
+ */
 function hasAnyAdminRole(c: Context): boolean {
   if (c.get('isSuperAdmin')) {
     return true;
@@ -36,13 +55,11 @@ function hasAnyAdminRole(c: Context): boolean {
   return Object.values(roles).includes('admin');
 }
 
-// GET /auth/roles/me — convenience endpoint for current user's roles
 rolesApp.get('/auth/roles/me', rolesAuthMiddleware, (c) => {
   const roles = c.get('roles') || {};
   return c.json({ roles });
 });
 
-// GET /auth/roles/user/:userId — returns all roles for a user
 rolesApp.get('/auth/roles/user/:userId', rolesAuthMiddleware, async (c) => {
   const targetUserId = c.req.param('userId');
   const currentUser = c.get('user');
@@ -62,7 +79,6 @@ rolesApp.get('/auth/roles/user/:userId', rolesAuthMiddleware, async (c) => {
   return c.json({ userId: targetUserId, roles: rows });
 });
 
-// GET /auth/roles/:subApp — returns all users with roles for a sub-app
 rolesApp.get('/auth/roles/:subApp', rolesAuthMiddleware, async (c) => {
   const subApp = c.req.param('subApp');
 
@@ -78,7 +94,6 @@ rolesApp.get('/auth/roles/:subApp', rolesAuthMiddleware, async (c) => {
   return c.json({ subApp, roles: rows });
 });
 
-// POST /auth/roles — assign or update a user's role for a sub-app
 rolesApp.post('/auth/roles', rolesAuthMiddleware, async (c) => {
   const body = await c.req
     .json<{ userId?: string; subApp?: string; role?: Role }>()
@@ -129,7 +144,6 @@ rolesApp.post('/auth/roles', rolesAuthMiddleware, async (c) => {
   return c.json({ success: true, role: userRole });
 });
 
-// DELETE /auth/roles — revoke a user's role for a sub-app
 rolesApp.delete('/auth/roles', rolesAuthMiddleware, async (c) => {
   const body = await c.req
     .json<{ userId?: string; subApp?: string }>()

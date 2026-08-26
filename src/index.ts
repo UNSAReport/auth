@@ -9,7 +9,6 @@ import { rolesApp } from '@/routes/roles';
 
 const app = new Hono();
 
-// Enable CORS for allowed sub-app origins
 app.use(
   '*',
   cors({
@@ -31,18 +30,15 @@ app.use(
   }),
 );
 
-// Ensure active RSA key exists on startup
 getOrGenerateActiveKey().catch((err) => {
   console.error('Failed to initialize active signing key:', err);
 });
 
-// Mount Routes
 app.route('/', jwksApp);
 app.route('/', authApp);
 app.route('/', patApp);
 app.route('/', rolesApp);
 
-// Health check / root endpoint
 app.get('/', (c) =>
   c.json({
     name: 'UNSAReport Identity Provider (IDP)',
@@ -70,12 +66,10 @@ app.get('/', (c) =>
   }),
 );
 
-// Global 404 Handler
 app.notFound((c) =>
   c.json({ error: 'Not Found', message: 'Route not found' }, 404),
 );
 
-// Global Error Handler
 app.onError((err, c) =>
   c.json(
     {

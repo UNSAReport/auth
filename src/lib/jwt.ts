@@ -12,6 +12,12 @@ import { signingKeys, userRoles } from '@/db/schema';
 import { getOrGenerateActiveKey } from '@/lib/keys';
 import type { AccessTokenClaims, Role, UserPayload } from '@/types';
 
+/**
+ * Retrieves all assigned application roles for a given user ID.
+ *
+ * @param userId - The ID of the user whose roles are being fetched.
+ * @returns A promise resolving to a mapping of sub-app identifiers to assigned roles.
+ */
 export async function getUserRoles(
   userId: string,
 ): Promise<Record<string, Role>> {
@@ -23,6 +29,12 @@ export async function getUserRoles(
   return Object.fromEntries(rows.map((r) => [r.subApp, r.role as Role]));
 }
 
+/**
+ * Signs and creates a JWT access token for a user using the active RSA private key.
+ *
+ * @param user - The user payload containing identity and role claims.
+ * @returns A promise resolving to the signed JWT access token string.
+ */
 export async function signAccessToken(user: UserPayload): Promise<string> {
   const activeKey = await getOrGenerateActiveKey();
   const privateKey = await importPKCS8(
@@ -54,6 +66,13 @@ export async function signAccessToken(user: UserPayload): Promise<string> {
   return jwt;
 }
 
+/**
+ * Verifies an access token signature and validates its claims against active public keys.
+ *
+ * @param token - The JWT access token string to verify.
+ * @returns A promise resolving to the verified access token claims.
+ * @throws Error if the token header is missing kid, key is unknown, or token is invalid.
+ */
 export async function verifyAccessToken(
   token: string,
 ): Promise<AccessTokenClaims> {

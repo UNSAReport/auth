@@ -1,13 +1,9 @@
 import { beforeAll, describe, expect, test } from 'bun:test';
-import { config } from '../src/config.ts';
-import { db } from '../src/db/index.ts';
-import { type User, users } from '../src/db/schema.ts';
-import app from '../src/index.ts';
-import {
-  getUserRoles,
-  signAccessToken,
-  verifyAccessToken,
-} from '../src/lib/jwt.ts';
+import { config } from '@/config';
+import { db } from '@/db/index';
+import { type User, users } from '@/db/schema';
+import app from '@/index';
+import { getUserRoles, signAccessToken, verifyAccessToken } from '@/lib/jwt';
 
 interface RoleItem {
   id: string;
@@ -22,7 +18,6 @@ describe('Role Management Endpoints & Integration', () => {
   let jwtTokenUserB: string;
 
   beforeAll(async () => {
-    // Create test users
     const [uA] = await db
       .insert(users)
       .values({
@@ -96,7 +91,6 @@ describe('Role Management Endpoints & Integration', () => {
   });
 
   test('3. Revoke role — success', async () => {
-    // First assign a role to userB
     await app.fetch(
       new Request('http://localhost:3000/auth/roles', {
         method: 'POST',
@@ -112,7 +106,6 @@ describe('Role Management Endpoints & Integration', () => {
       }),
     );
 
-    // Revoke it
     const res = await app.fetch(
       new Request('http://localhost:3000/auth/roles', {
         method: 'DELETE',
@@ -189,7 +182,6 @@ describe('Role Management Endpoints & Integration', () => {
   });
 
   test('7. Non-admin attempting admin operation — 403', async () => {
-    // userB has no admin roles
     const res = await app.fetch(
       new Request('http://localhost:3000/auth/roles', {
         method: 'POST',

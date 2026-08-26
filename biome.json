@@ -44,17 +44,5 @@
     "actions": {
       "preset": "recommended"
     }
-  },
-  "overrides": [
-    {
-      "includes": ["tests/**"],
-      "linter": {
-        "rules": {
-          "style": {
-            "noRestrictedImports": "off"
-          }
-        }
-      }
-    }
-  ]
+  }
 }

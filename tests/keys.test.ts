@@ -4,7 +4,7 @@ import {
   getAllActivePublicKeys,
   getOrGenerateActiveKey,
   rotateKeys,
-} from '../src/lib/keys.ts';
+} from '@/lib/keys';
 
 describe('RSA Key Management', () => {
   test('generateRSAKeyPair creates valid RSA 2048 key pair in PEM format', async () => {

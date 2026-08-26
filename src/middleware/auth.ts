@@ -8,6 +8,9 @@ import { verifyPAT } from '@/lib/tokens';
 import type { AccessTokenClaims, AuthUser, Role } from '@/types';
 
 declare module 'hono' {
+  /**
+   * Extension of Hono ContextVariableMap for authentication context variables.
+   */
   interface ContextVariableMap {
     user: AuthUser;
     authType: 'jwt' | 'pat';
@@ -18,6 +21,12 @@ declare module 'hono' {
   }
 }
 
+/**
+ * Middleware that authenticates incoming HTTP requests using either a Bearer JWT access token or Personal Access Token (PAT).
+ *
+ * @param c - Hono context object.
+ * @param next - Next middleware handler function.
+ */
 export const authMiddleware: MiddlewareHandler = async (c, next) => {
   const authHeader = c.req.header('Authorization');
   let token: string | undefined;

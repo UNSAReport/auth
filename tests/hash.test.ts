@@ -1,13 +1,13 @@
 import { describe, expect, test } from 'bun:test';
-import { generateRandomHex, hashToken } from '../src/lib/hash.ts';
+import { generateRandomHex, hashToken } from '@/lib/hash';
 
 describe('Hash Utilities', () => {
   test('generateRandomHex creates hex strings of correct length', () => {
     const hex16 = generateRandomHex(16);
-    expect(hex16).toHaveLength(32); // 16 bytes = 32 hex chars
+    expect(hex16).toHaveLength(32);
 
     const hex32 = generateRandomHex(32);
-    expect(hex32).toHaveLength(64); // 32 bytes = 64 hex chars
+    expect(hex32).toHaveLength(64);
   });
 
   test('hashToken computes deterministic SHA-256 hash', () => {

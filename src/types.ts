@@ -1,5 +1,8 @@
 export type Role = 'user' | 'admin';
 
+/**
+ * Represents the payload data for an authenticated user.
+ */
 export interface UserPayload {
   sub: string;
   email: string;
@@ -8,6 +11,9 @@ export interface UserPayload {
   roles?: Record<string, Role>;
 }
 
+/**
+ * Represents the decoded JWT claims for an access token.
+ */
 export interface AccessTokenClaims extends UserPayload {
   roles: Record<string, Role>;
   iss: string;
@@ -17,6 +23,9 @@ export interface AccessTokenClaims extends UserPayload {
   type: 'access';
 }
 
+/**
+ * Represents an authenticated user entity.
+ */
 export interface AuthUser {
   id: string;
   email: string;
@@ -26,6 +35,9 @@ export interface AuthUser {
   updatedAt: Date | null;
 }
 
+/**
+ * Represents standard user profile metadata returned by an OAuth provider.
+ */
 export interface OAuthUserInfo {
   providerId: string;
   email: string;
@@ -33,6 +45,9 @@ export interface OAuthUserInfo {
   picture?: string;
 }
 
+/**
+ * Interface contract defining methods required for an OAuth authentication provider.
+ */
 export interface OAuthProvider {
   name: string;
   getAuthUrl: (state: string, codeVerifier?: string) => string;

@@ -18,7 +18,13 @@ import { authMiddleware } from '@/middleware/auth';
 
 const authApp = new Hono();
 
-// Helper to handle provider redirect
+/**
+ * Initiates the OAuth redirect flow for a specified provider.
+ *
+ * @param c - Hono context object.
+ * @param providerName - Name of the OAuth provider.
+ * @returns A HTTP redirect response to the OAuth provider authorization endpoint.
+ */
 function handleOAuthRedirect(c: Context, providerName: string) {
   const provider = providerRegistry.get(providerName);
   if (!provider) {
@@ -36,7 +42,7 @@ function handleOAuthRedirect(c: Context, providerName: string) {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'Lax',
-    maxAge: 600, // 10 minutes
+    maxAge: 600,
     path: '/',
   });
 
@@ -44,7 +50,13 @@ function handleOAuthRedirect(c: Context, providerName: string) {
   return c.redirect(authUrl);
 }
 
-// Helper to handle provider callback
+/**
+ * Handles the OAuth callback from an external authentication provider.
+ *
+ * @param c - Hono context object.
+ * @param providerName - Name of the OAuth provider handling the callback.
+ * @returns A promise resolving to a redirect response to the client application or an error JSON response.
+ */
 async function handleOAuthCallback(c: Context, providerName: string) {
   const provider = providerRegistry.get(providerName);
   if (!provider) {
@@ -111,19 +123,14 @@ async function handleOAuthCallback(c: Context, providerName: string) {
   }
 }
 
-// GET /auth/google
 authApp.get('/auth/google', (c) => handleOAuthRedirect(c, 'google'));
 
-// GET /auth/google/callback
 authApp.get('/auth/google/callback', (c) => handleOAuthCallback(c, 'google'));
 
-// GET /auth/github (Phase 4)
 authApp.get('/auth/github', (c) => handleOAuthRedirect(c, 'github'));
 
-// GET /auth/github/callback (Phase 4)
 authApp.get('/auth/github/callback', (c) => handleOAuthCallback(c, 'github'));
 
-// POST /auth/refresh
 authApp.post('/auth/refresh', async (c) => {
   const body = await c.req
     .json<{ refresh_token?: string }>()
@@ -182,7 +189,6 @@ authApp.post('/auth/refresh', async (c) => {
   }
 });
 
-// POST /auth/logout
 authApp.post('/auth/logout', async (c) => {
   const body = await c.req
     .json<{ refresh_token?: string }>()
@@ -198,7 +204,6 @@ authApp.post('/auth/logout', async (c) => {
   return c.json({ success: true, message: 'Logged out successfully' });
 });
 
-// GET /auth/me
 authApp.get('/auth/me', authMiddleware, (c) => {
   const user = c.get('user');
   const authType = c.get('authType');

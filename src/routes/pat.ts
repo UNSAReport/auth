@@ -7,7 +7,6 @@ const patApp = new Hono();
 patApp.use('/auth/pat', authMiddleware);
 patApp.use('/auth/pat/*', authMiddleware);
 
-// POST /auth/pat - Create a new PAT
 patApp.post('/auth/pat', async (c) => {
   const user = c.get('user');
   const body = await c.req.json().catch(() => ({}));
@@ -40,7 +39,7 @@ patApp.post('/auth/pat', async (c) => {
 
   return c.json(
     {
-      token, // Plaintext PAT returned ONLY ONCE upon creation
+      token,
       pat: {
         id: pat.id,
         name: pat.name,
@@ -53,14 +52,12 @@ patApp.post('/auth/pat', async (c) => {
   );
 });
 
-// GET /auth/pat - List user's active PATs
 patApp.get('/auth/pat', async (c) => {
   const user = c.get('user');
   const pats = await listUserPATs(user.id);
   return c.json({ pats });
 });
 
-// DELETE /auth/pat/:id - Revoke a PAT
 patApp.delete('/auth/pat/:id', async (c) => {
   const user = c.get('user');
   const patId = c.req.param('id');

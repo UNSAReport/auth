@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'bun:test';
-import { config } from '../src/config.ts';
-import { signAccessToken, verifyAccessToken } from '../src/lib/jwt.ts';
-import { rotateKeys } from '../src/lib/keys.ts';
+import { config } from '@/config';
+import { signAccessToken, verifyAccessToken } from '@/lib/jwt';
+import { rotateKeys } from '@/lib/keys';
 
 describe('JWT Access Token Signing and Verification', () => {
   const dummyUser = {
@@ -30,10 +30,8 @@ describe('JWT Access Token Signing and Verification', () => {
   test('verifyAccessToken can verify token signed prior to key rotation', async () => {
     const token = await signAccessToken(dummyUser);
 
-    // Rotate keys
     await rotateKeys();
 
-    // Verification should still succeed because old key exists in DB (even if non-active for new signatures)
     const verified = await verifyAccessToken(token);
     expect(verified.sub).toBe(dummyUser.sub);
   });

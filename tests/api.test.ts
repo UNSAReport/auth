@@ -1,10 +1,10 @@
 import { beforeAll, describe, expect, test } from 'bun:test';
-import { config } from '../src/config.ts';
-import { db } from '../src/db/index.ts';
-import { type User, users } from '../src/db/schema.ts';
-import app from '../src/index.ts';
-import { signAccessToken } from '../src/lib/jwt.ts';
-import { createRefreshToken } from '../src/lib/tokens.ts';
+import { config } from '@/config';
+import { db } from '@/db/index';
+import { type User, users } from '@/db/schema';
+import app from '@/index';
+import { signAccessToken } from '@/lib/jwt';
+import { createRefreshToken } from '@/lib/tokens';
 
 interface PatItem {
   id: string;
@@ -121,7 +121,6 @@ describe('IDP API Endpoints E2E', () => {
     const patToken = body.token;
     const patId = body.pat.id;
 
-    // Verify /auth/me with PAT
     const meRes = await app.fetch(
       new Request('http://localhost:3000/auth/me', {
         headers: { Authorization: `Bearer ${patToken}` },
@@ -132,7 +131,6 @@ describe('IDP API Endpoints E2E', () => {
     expect(meBody.user.id).toBe(testUser.id);
     expect(meBody.auth_type).toBe('pat');
 
-    // List PATs
     const listRes = await app.fetch(
       new Request('http://localhost:3000/auth/pat', {
         headers: { Authorization: `Bearer ${jwtToken}` },
@@ -142,7 +140,6 @@ describe('IDP API Endpoints E2E', () => {
     const listBody = await listRes.json();
     expect(listBody.pats.some((p: PatItem) => p.id === patId)).toBe(true);
 
-    // Delete PAT
     const delRes = await app.fetch(
       new Request(`http://localhost:3000/auth/pat/${patId}`, {
         method: 'DELETE',
@@ -179,7 +176,6 @@ describe('IDP API Endpoints E2E', () => {
     );
     expect(logoutRes.status).toBe(200);
 
-    // Refreshing with revoked token fails
     const refreshRes = await app.fetch(
       new Request('http://localhost:3000/auth/refresh', {
         method: 'POST',
