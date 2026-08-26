@@ -8,7 +8,6 @@ export default defineConfig({
   dbCredentials: {
     url:
       process.env.DATABASE_URL ||
-      // biome-ignore lint/security/noSecrets: local development database fallback URL
       'postgresql://idp:idppassword@localhost:5432/idp_db',
   },
 });

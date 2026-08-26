@@ -7,13 +7,7 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": [
-      "**",
-      "!**/node_modules",
-      "!src/db/migrations",
-      "!bun.lock",
-      "!flake.lock"
-    ]
+    "includes": ["**", "!**/node_modules"]
   },
   "formatter": {
     "enabled": true,
@@ -23,25 +17,19 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "preset": "all",
-      "correctness": {
-        "noNodejsModules": "off",
-        "useQwikValidLexicalScope": "off"
-      },
-      "complexity": {
-        "noExcessiveLinesPerFunction": "off"
-      },
-      "suspicious": {
-        "noConsole": "off"
-      },
+      "preset": "recommended",
       "style": {
-        "noDefaultExport": "off",
-        "noProcessEnv": "off",
-        "noMagicNumbers": "off",
-        "noTernary": "off",
-        "noSubstr": "off",
-        "useNamingConvention": "off",
-        "noExcessiveClassesPerFile": "off"
+        "noRestrictedImports": {
+          "level": "error",
+          "options": {
+            "patterns": [
+              {
+                "group": ["./**", "../**"],
+                "message": "Relative imports are not allowed. Use absolute imports with the @/ alias."
+              }
+            ]
+          }
+        }
       }
     }
   },
@@ -51,24 +39,22 @@
       "quoteStyle": "single"
     }
   },
+  "assist": {
+    "enabled": true,
+    "actions": {
+      "preset": "recommended"
+    }
+  },
   "overrides": [
     {
       "includes": ["tests/**"],
       "linter": {
         "rules": {
-          "correctness": {
-            "noUnresolvedImports": "off"
+          "style": {
+            "noRestrictedImports": "off"
           }
         }
       }
     }
-  ],
-  "assist": {
-    "enabled": true,
-    "actions": {
-      "source": {
-        "organizeImports": "on"
-      }
-    }
-  }
+  ]
 }

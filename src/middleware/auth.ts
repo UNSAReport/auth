@@ -1,11 +1,11 @@
 import { eq } from 'drizzle-orm';
 import type { MiddlewareHandler } from 'hono';
 import { getCookie } from 'hono/cookie';
-import { db } from '../db/index.ts';
-import { type PersonalAccessToken, users } from '../db/schema.ts';
-import { getUserRoles, verifyAccessToken } from '../lib/jwt.ts';
-import { verifyPAT } from '../lib/tokens.ts';
-import type { AccessTokenClaims, AuthUser, Role } from '../types.ts';
+import { db } from '@/db/index';
+import { type PersonalAccessToken, users } from '@/db/schema';
+import { getUserRoles, verifyAccessToken } from '@/lib/jwt';
+import { verifyPAT } from '@/lib/tokens';
+import type { AccessTokenClaims, AuthUser, Role } from '@/types';
 
 declare module 'hono' {
   interface ContextVariableMap {

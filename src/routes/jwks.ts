@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
-import { config } from '../config.ts';
-import { getAllActivePublicKeys, rotateKeys } from '../lib/keys.ts';
+import { config } from '@/config';
+import { getAllActivePublicKeys, rotateKeys } from '@/lib/keys';
 
 const jwksApp = new Hono();
 

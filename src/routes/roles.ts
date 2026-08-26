@@ -1,11 +1,11 @@
 import { and, eq } from 'drizzle-orm';
 import type { Context, MiddlewareHandler } from 'hono';
 import { Hono } from 'hono';
-import { config } from '../config.ts';
-import { db } from '../db/index.ts';
-import { userRoles, users } from '../db/schema.ts';
-import { authMiddleware } from '../middleware/auth.ts';
-import type { Role } from '../types.ts';
+import { config } from '@/config';
+import { db } from '@/db/index';
+import { userRoles, users } from '@/db/schema';
+import { authMiddleware } from '@/middleware/auth';
+import type { Role } from '@/types';
 
 const rolesApp = new Hono();
 

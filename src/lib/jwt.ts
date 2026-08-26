@@ -6,11 +6,11 @@ import {
   jwtVerify,
   SignJWT,
 } from 'jose';
-import { config } from '../config.ts';
-import { db } from '../db/index.ts';
-import { signingKeys, userRoles } from '../db/schema.ts';
-import type { AccessTokenClaims, Role, UserPayload } from '../types.ts';
-import { getOrGenerateActiveKey } from './keys.ts';
+import { config } from '@/config';
+import { db } from '@/db/index';
+import { signingKeys, userRoles } from '@/db/schema';
+import { getOrGenerateActiveKey } from '@/lib/keys';
+import type { AccessTokenClaims, Role, UserPayload } from '@/types';
 
 export async function getUserRoles(
   userId: string,

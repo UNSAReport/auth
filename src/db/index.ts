@@ -1,13 +1,13 @@
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
-import { config } from '../config.ts';
+import { config } from '@/config';
 import {
   oauthAccounts,
   personalAccessTokens,
   refreshTokens,
   signingKeys,
   users,
-} from './schema.ts';
+} from '@/db/schema';
 
 const schema = {
   users,

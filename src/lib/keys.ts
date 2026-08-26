@@ -7,9 +7,9 @@ import {
   importSPKI,
   type JWK,
 } from 'jose';
-import { db } from '../db/index.ts';
-import { signingKeys } from '../db/schema.ts';
-import { generateRandomHex } from './hash.ts';
+import { db } from '@/db/index';
+import { signingKeys } from '@/db/schema';
+import { generateRandomHex } from '@/lib/hash';
 
 export interface KeyPairResult {
   kid: string;

@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
-import { createPAT, listUserPATs, revokePAT } from '../lib/tokens.ts';
-import { authMiddleware } from '../middleware/auth.ts';
+import { createPAT, listUserPATs, revokePAT } from '@/lib/tokens';
+import { authMiddleware } from '@/middleware/auth';
 
 const patApp = new Hono();
 

@@ -3,18 +3,18 @@ import { eq } from 'drizzle-orm';
 import type { Context } from 'hono';
 import { Hono } from 'hono';
 import { deleteCookie, getCookie, setCookie } from 'hono/cookie';
-import { config } from '../config.ts';
-import { db } from '../db/index.ts';
-import { users } from '../db/schema.ts';
-import { generateRandomHex } from '../lib/hash.ts';
-import { getUserRoles, signAccessToken } from '../lib/jwt.ts';
-import { providerRegistry, upsertOAuthUser } from '../lib/oauth.ts';
+import { config } from '@/config';
+import { db } from '@/db/index';
+import { users } from '@/db/schema';
+import { generateRandomHex } from '@/lib/hash';
+import { getUserRoles, signAccessToken } from '@/lib/jwt';
+import { providerRegistry, upsertOAuthUser } from '@/lib/oauth';
 import {
   createRefreshToken,
   revokeRefreshToken,
   verifyAndRotateRefreshToken,
-} from '../lib/tokens.ts';
-import { authMiddleware } from '../middleware/auth.ts';
+} from '@/lib/tokens';
+import { authMiddleware } from '@/middleware/auth';
 
 const authApp = new Hono();
 

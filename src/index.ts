@@ -1,11 +1,11 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
-import { config } from './config.ts';
-import { getOrGenerateActiveKey } from './lib/keys.ts';
-import { authApp } from './routes/auth.ts';
-import { jwksApp } from './routes/jwks.ts';
-import { patApp } from './routes/pat.ts';
-import { rolesApp } from './routes/roles.ts';
+import { config } from '@/config';
+import { getOrGenerateActiveKey } from '@/lib/keys';
+import { authApp } from '@/routes/auth';
+import { jwksApp } from '@/routes/jwks';
+import { patApp } from '@/routes/pat';
+import { rolesApp } from '@/routes/roles';
 
 const app = new Hono();
 

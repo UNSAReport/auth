@@ -1,8 +1,8 @@
 import { and, eq, gt, isNull } from 'drizzle-orm';
-import { config } from '../config.ts';
-import { db } from '../db/index.ts';
-import { personalAccessTokens, refreshTokens, users } from '../db/schema.ts';
-import { generateRandomHex, hashToken } from './hash.ts';
+import { config } from '@/config';
+import { db } from '@/db/index';
+import { personalAccessTokens, refreshTokens, users } from '@/db/schema';
+import { generateRandomHex, hashToken } from '@/lib/hash';
 
 export async function createRefreshToken(userId: string): Promise<string> {
   const token = `unsareport_rf_${generateRandomHex(32)}`;

@@ -1,8 +1,8 @@
 import { and, eq } from 'drizzle-orm';
-import { config } from '../config.ts';
-import { db } from '../db/index.ts';
-import { oauthAccounts, users } from '../db/schema.ts';
-import type { OAuthProvider, OAuthUserInfo } from '../types.ts';
+import { config } from '@/config';
+import { db } from '@/db/index';
+import { oauthAccounts, users } from '@/db/schema';
+import type { OAuthProvider, OAuthUserInfo } from '@/types';
 
 interface GoogleTokenResponse {
   access_token: string;

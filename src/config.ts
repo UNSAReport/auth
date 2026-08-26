@@ -2,7 +2,6 @@ import process from 'node:process';
 export const config = {
   databaseUrl:
     process.env.DATABASE_URL ||
-    // biome-ignore lint/security/noSecrets: local development database fallback URL
     'postgresql://idp:idppassword@localhost:5432/idp_db',
 
   googleClientId: process.env.GOOGLE_CLIENT_ID || '',
