@@ -7,7 +7,7 @@ import { userRoles, users } from '@/db/schema';
 import { authMiddleware } from '@/middleware/auth';
 import type { Role } from '@/types';
 
-const rolesApp = new Hono();
+const rolesRouter = new Hono();
 
 /**
  * Middleware that authenticates admin requests via X-Admin-Key header or falls back to standard auth middleware.
@@ -55,12 +55,20 @@ function hasAnyAdminRole(c: Context): boolean {
   return Object.values(roles).includes('admin');
 }
 
-rolesApp.get('/auth/roles/me', rolesAuthMiddleware, (c) => {
+/**
+ * Route handler for GET /me
+ * Returns assigned sub-app roles for the authenticated user.
+ */
+rolesRouter.get('/me', rolesAuthMiddleware, (c) => {
   const roles = c.get('roles') || {};
   return c.json({ roles });
 });
 
-rolesApp.get('/auth/roles/user/:userId', rolesAuthMiddleware, async (c) => {
+/**
+ * Route handler for GET /user/:userId
+ * Returns assigned sub-app roles for a specified target user ID.
+ */
+rolesRouter.get('/user/:userId', rolesAuthMiddleware, async (c) => {
   const targetUserId = c.req.param('userId');
   const currentUser = c.get('user');
 
@@ -79,7 +87,11 @@ rolesApp.get('/auth/roles/user/:userId', rolesAuthMiddleware, async (c) => {
   return c.json({ userId: targetUserId, roles: rows });
 });
 
-rolesApp.get('/auth/roles/:subApp', rolesAuthMiddleware, async (c) => {
+/**
+ * Route handler for GET /:subApp
+ * Returns all user role assignments for a specified sub-app.
+ */
+rolesRouter.get('/:subApp', rolesAuthMiddleware, async (c) => {
   const subApp = c.req.param('subApp');
 
   if (!authorizeAdminForSubApp(c, subApp)) {
@@ -94,7 +106,11 @@ rolesApp.get('/auth/roles/:subApp', rolesAuthMiddleware, async (c) => {
   return c.json({ subApp, roles: rows });
 });
 
-rolesApp.post('/auth/roles', rolesAuthMiddleware, async (c) => {
+/**
+ * Route handler for POST /
+ * Creates or updates a role assignment for a user in a target sub-app.
+ */
+rolesRouter.post('/', rolesAuthMiddleware, async (c) => {
   const body = await c.req
     .json<{ userId?: string; subApp?: string; role?: Role }>()
     .catch(() => ({}) as { userId?: string; subApp?: string; role?: Role });
@@ -144,7 +160,11 @@ rolesApp.post('/auth/roles', rolesAuthMiddleware, async (c) => {
   return c.json({ success: true, role: userRole });
 });
 
-rolesApp.delete('/auth/roles', rolesAuthMiddleware, async (c) => {
+/**
+ * Route handler for DELETE /
+ * Revokes a user role assignment for a specified sub-app.
+ */
+rolesRouter.delete('/', rolesAuthMiddleware, async (c) => {
   const body = await c.req
     .json<{ userId?: string; subApp?: string }>()
     .catch(() => ({}) as { userId?: string; subApp?: string });
@@ -181,4 +201,4 @@ rolesApp.delete('/auth/roles', rolesAuthMiddleware, async (c) => {
   return c.json({ success: true, message: 'Role revoked successfully' });
 });
 
-export { rolesApp };
+export { rolesRouter };

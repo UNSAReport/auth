@@ -6,6 +6,9 @@ import app from '@/index';
 import { signAccessToken } from '@/lib/jwt';
 import { createRefreshToken } from '@/lib/tokens';
 
+/**
+ * Represents a personal access token item returned by PAT listing endpoint.
+ */
 interface PatItem {
   id: string;
   name: string;
@@ -45,9 +48,9 @@ describe('IDP API Endpoints E2E', () => {
     expect(body.issuer).toBe(config.idpIssuer);
   });
 
-  test('GET /v1/.well-known/jwks.json returns public keys', async () => {
+  test('GET /.well-known/jwks.json returns public keys', async () => {
     const res = await app.fetch(
-      new Request('http://localhost:3000/v1/.well-known/jwks.json'),
+      new Request('http://localhost:3000/.well-known/jwks.json'),
     );
     expect(res.status).toBe(200);
     const body = await res.json();

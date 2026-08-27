@@ -16,7 +16,7 @@ import {
 } from '@/lib/tokens';
 import { authMiddleware } from '@/middleware/auth';
 
-const authApp = new Hono();
+const authRouter = new Hono();
 
 /**
  * Initiates the OAuth redirect flow for a specified provider.
@@ -123,15 +123,35 @@ async function handleOAuthCallback(c: Context, providerName: string) {
   }
 }
 
-authApp.get('/auth/google', (c) => handleOAuthRedirect(c, 'google'));
+/**
+ * Route handler for GET /google
+ * Initiates the Google OAuth authorization flow.
+ */
+authRouter.get('/google', (c) => handleOAuthRedirect(c, 'google'));
 
-authApp.get('/auth/google/callback', (c) => handleOAuthCallback(c, 'google'));
+/**
+ * Route handler for GET /google/callback
+ * Handles Google OAuth callback and exchanges code for tokens.
+ */
+authRouter.get('/google/callback', (c) => handleOAuthCallback(c, 'google'));
 
-authApp.get('/auth/github', (c) => handleOAuthRedirect(c, 'github'));
+/**
+ * Route handler for GET /github
+ * Initiates the GitHub OAuth authorization flow.
+ */
+authRouter.get('/github', (c) => handleOAuthRedirect(c, 'github'));
 
-authApp.get('/auth/github/callback', (c) => handleOAuthCallback(c, 'github'));
+/**
+ * Route handler for GET /github/callback
+ * Handles GitHub OAuth callback and exchanges code for tokens.
+ */
+authRouter.get('/github/callback', (c) => handleOAuthCallback(c, 'github'));
 
-authApp.post('/auth/refresh', async (c) => {
+/**
+ * Route handler for POST /refresh
+ * Exchanges a valid refresh token for a new JWT access token and rotated refresh token.
+ */
+authRouter.post('/refresh', async (c) => {
   const body = await c.req
     .json<{ refresh_token?: string }>()
     .catch(() => ({}) as { refresh_token?: string });
@@ -189,7 +209,11 @@ authApp.post('/auth/refresh', async (c) => {
   }
 });
 
-authApp.post('/auth/logout', async (c) => {
+/**
+ * Route handler for POST /logout
+ * Revokes the active refresh token and clears auth cookies.
+ */
+authRouter.post('/logout', async (c) => {
   const body = await c.req
     .json<{ refresh_token?: string }>()
     .catch(() => ({}) as { refresh_token?: string });
@@ -204,7 +228,11 @@ authApp.post('/auth/logout', async (c) => {
   return c.json({ success: true, message: 'Logged out successfully' });
 });
 
-authApp.get('/auth/me', authMiddleware, (c) => {
+/**
+ * Route handler for GET /me
+ * Returns user details, authentication type, and roles for the authenticated user.
+ */
+authRouter.get('/me', authMiddleware, (c) => {
   const user = c.get('user');
   const authType = c.get('authType');
   const jwtClaims = c.get('jwtClaims');
@@ -229,4 +257,4 @@ authApp.get('/auth/me', authMiddleware, (c) => {
   });
 });
 
-export { authApp };
+export { authRouter };

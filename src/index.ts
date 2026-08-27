@@ -2,10 +2,11 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { config } from '@/config';
 import { getOrGenerateActiveKey } from '@/lib/keys';
-import { authApp } from '@/routes/auth';
-import { jwksApp } from '@/routes/jwks';
-import { patApp } from '@/routes/pat';
-import { rolesApp } from '@/routes/roles';
+import { authRouter } from '@/routes/auth';
+import { jwksRouter } from '@/routes/jwks';
+import { keysRouter } from '@/routes/keys';
+import { patRouter } from '@/routes/pat';
+import { rolesRouter } from '@/routes/roles';
 
 const app = new Hono();
 
@@ -35,45 +36,39 @@ getOrGenerateActiveKey().catch((err) => {
 });
 
 const v1 = new Hono();
-v1.route('/', jwksApp);
-v1.route('/', authApp);
-v1.route('/', patApp);
-v1.route('/', rolesApp);
+v1.route('/auth', authRouter);
+v1.route('/auth/pat', patRouter);
+v1.route('/auth/roles', rolesRouter);
+v1.route('/auth/keys', keysRouter);
 
 app.route('/v1', v1);
-app.route('/', jwksApp);
+app.route('/', jwksRouter);
 
+/**
+ * Route handler for GET /
+ * Returns status metadata and available API endpoints.
+ */
 app.get('/', (c) =>
   c.json({
     name: 'UNSAReport Identity Provider (IDP)',
     status: 'online',
     issuer: config.idpIssuer,
-    endpoints: [
-      'GET /v1/auth/google',
-      'GET /v1/auth/google/callback',
-      'GET /v1/auth/github',
-      'GET /v1/auth/github/callback',
-      'POST /v1/auth/refresh',
-      'POST /v1/auth/logout',
-      'GET /v1/auth/me',
-      'POST /v1/auth/pat',
-      'GET /v1/auth/pat',
-      'DELETE /v1/auth/pat/:id',
-      'POST /v1/auth/roles',
-      'DELETE /v1/auth/roles',
-      'GET /v1/auth/roles/me',
-      'GET /v1/auth/roles/:subApp',
-      'GET /v1/auth/roles/user/:userId',
-      'GET /v1/.well-known/jwks.json',
-      'POST /v1/auth/keys/rotate',
-    ],
+    endpoints: app.routes
+      .filter((r) => r.path !== '/' && r.method !== 'ALL')
+      .map((r) => `${r.method} ${r.path}`),
   }),
 );
 
+/**
+ * Not-found handler for unmatched routes.
+ */
 app.notFound((c) =>
   c.json({ error: 'Not Found', message: 'Route not found' }, 404),
 );
 
+/**
+ * Global error handler for unhandled application errors.
+ */
 app.onError((err, c) =>
   c.json(
     {

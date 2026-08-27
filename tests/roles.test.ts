@@ -5,6 +5,9 @@ import { type User, users } from '@/db/schema';
 import app from '@/index';
 import { getUserRoles, signAccessToken, verifyAccessToken } from '@/lib/jwt';
 
+/**
+ * Represents a role assignment item returned by role management endpoints.
+ */
 interface RoleItem {
   id: string;
   userId: string;

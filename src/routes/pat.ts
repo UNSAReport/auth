@@ -2,12 +2,14 @@ import { Hono } from 'hono';
 import { createPAT, listUserPATs, revokePAT } from '@/lib/tokens';
 import { authMiddleware } from '@/middleware/auth';
 
-const patApp = new Hono();
+const patRouter = new Hono();
 
-patApp.use('/auth/pat', authMiddleware);
-patApp.use('/auth/pat/*', authMiddleware);
+patRouter.use('*', authMiddleware);
 
-patApp.post('/auth/pat', async (c) => {
+/**
+ * Creates a new personal access token for the authenticated user.
+ */
+patRouter.post('/', async (c) => {
   const user = c.get('user');
   const body = await c.req.json().catch(() => ({}));
   const { name, scopes, expires_at } = body;
@@ -52,13 +54,19 @@ patApp.post('/auth/pat', async (c) => {
   );
 });
 
-patApp.get('/auth/pat', async (c) => {
+/**
+ * Lists all active personal access tokens for the authenticated user.
+ */
+patRouter.get('/', async (c) => {
   const user = c.get('user');
   const pats = await listUserPATs(user.id);
   return c.json({ pats });
 });
 
-patApp.delete('/auth/pat/:id', async (c) => {
+/**
+ * Revokes a personal access token by ID for the authenticated user.
+ */
+patRouter.delete('/:id', async (c) => {
   const user = c.get('user');
   const patId = c.req.param('id');
 
@@ -73,4 +81,4 @@ patApp.delete('/auth/pat/:id', async (c) => {
   return c.json({ success: true, message: 'PAT revoked successfully' });
 });
 
-export { patApp };
+export { patRouter };
