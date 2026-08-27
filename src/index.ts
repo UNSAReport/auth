@@ -34,10 +34,14 @@ getOrGenerateActiveKey().catch((err) => {
   console.error('Failed to initialize active signing key:', err);
 });
 
+const v1 = new Hono();
+v1.route('/', jwksApp);
+v1.route('/', authApp);
+v1.route('/', patApp);
+v1.route('/', rolesApp);
+
+app.route('/v1', v1);
 app.route('/', jwksApp);
-app.route('/', authApp);
-app.route('/', patApp);
-app.route('/', rolesApp);
 
 app.get('/', (c) =>
   c.json({
@@ -45,23 +49,23 @@ app.get('/', (c) =>
     status: 'online',
     issuer: config.idpIssuer,
     endpoints: [
-      'GET /auth/google',
-      'GET /auth/google/callback',
-      'GET /auth/github',
-      'GET /auth/github/callback',
-      'POST /auth/refresh',
-      'POST /auth/logout',
-      'GET /auth/me',
-      'POST /auth/pat',
-      'GET /auth/pat',
-      'DELETE /auth/pat/:id',
-      'POST /auth/roles',
-      'DELETE /auth/roles',
-      'GET /auth/roles/me',
-      'GET /auth/roles/:subApp',
-      'GET /auth/roles/user/:userId',
-      'GET /.well-known/jwks.json',
-      'POST /auth/keys/rotate',
+      'GET /v1/auth/google',
+      'GET /v1/auth/google/callback',
+      'GET /v1/auth/github',
+      'GET /v1/auth/github/callback',
+      'POST /v1/auth/refresh',
+      'POST /v1/auth/logout',
+      'GET /v1/auth/me',
+      'POST /v1/auth/pat',
+      'GET /v1/auth/pat',
+      'DELETE /v1/auth/pat/:id',
+      'POST /v1/auth/roles',
+      'DELETE /v1/auth/roles',
+      'GET /v1/auth/roles/me',
+      'GET /v1/auth/roles/:subApp',
+      'GET /v1/auth/roles/user/:userId',
+      'GET /v1/.well-known/jwks.json',
+      'POST /v1/auth/keys/rotate',
     ],
   }),
 );
