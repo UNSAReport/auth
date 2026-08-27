@@ -1,0 +1,5 @@
+creation_rules:
+  - path_regex: ^secrets/.*\.env$
+    key_groups:
+      - pgp: "e7c169225c0f274e219a6a17e507437845c4d992,5ec2d83d9086e5d43bfac7cb9a756e2dc0583da4"
+        age: "age1elwacftw4lx9zkw2s2kau7uzuxpgzxk7dt0xkr396lx7yn63df9sz7em0a"
