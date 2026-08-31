@@ -16,4 +16,6 @@ decrypt env:
 
 compose env *args: (decrypt env)
   #!/usr/bin/env bash
+  set -euo pipefail
+  docker network create unsareport-dev 2>/dev/null || true
   docker compose -f docker-compose.{{ env }}.yml --env-file .env.{{ env }} {{ args }}
