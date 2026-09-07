@@ -1,0 +1,23 @@
+http:
+  routers:
+    auth:
+      rule: "PathPrefix(`/api/auth`) || Path(`/.well-known/jwks.json`)"
+      entryPoints:
+        - web
+      priority: 10
+      middlewares:
+        - auth-strip
+      service: auth-service
+
+  middlewares:
+    auth-strip:
+      stripPrefix:
+        prefixes:
+          - "/api/auth"
+        forceSlash: false
+
+  services:
+    auth-service:
+      loadBalancer:
+        servers:
+          - url: "http://host.docker.internal:3000"

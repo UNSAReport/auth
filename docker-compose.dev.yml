@@ -8,11 +8,12 @@ services:
   traefik:
     image: traefik:v3.3
     container_name: auth-traefik
-    profiles: ["traefik"]
     command:
       - --providers.docker=true
       - --providers.docker.exposedByDefault=false
       - --providers.docker.network=unsareport-dev
+      - --providers.file.filename=/etc/traefik/dynamic.yml
+      - --providers.file.watch=true
       - --entryPoints.web.address=:80
       - --log.level=INFO
       - --api.dashboard=true
@@ -21,15 +22,20 @@ services:
       - "9876:80"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik-dynamic.yml:/etc/traefik/dynamic.yml:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     networks: [unsareport-dev]
 
-  postgres:
+  postgres-auth:
     image: postgres:16-alpine
-    container_name: auth-postgres-standalone
+    container_name: auth-postgres
     environment:
       POSTGRES_USER: idp
       POSTGRES_PASSWORD: idppassword
       POSTGRES_DB: idp_db
+    ports:
+      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks: [unsareport-dev]
@@ -38,39 +44,6 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-
-  auth:
-    image: ghcr.io/unsareport/auth:latest-dev
-    pull_policy: always
-    container_name: auth-auth
-    environment:
-      DATABASE_URL: postgresql://idp:idppassword@postgres:5432/idp_db
-      IDP_ISSUER: http://localhost:9876/api/auth
-      IDP_PORT: 3000
-      IDP_ALLOWED_ORIGINS: http://localhost:9876
-      CLIENT_REDIRECT_URL: http://localhost:9876
-      ADMIN_API_KEY: admin-secret-key-12345
-      ACCESS_TOKEN_TTL: 900
-      REFRESH_TOKEN_TTL: 2592000
-    depends_on:
-      postgres:
-        condition: service_healthy
-    networks: [unsareport-dev]
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.auth.rule=PathPrefix(`/api/auth`) || Path(`/.well-known/jwks.json`)
-      - traefik.http.routers.auth.entryPoints=web
-      - traefik.http.routers.auth.priority=10
-      - traefik.http.routers.auth.middlewares=auth-strip
-      - traefik.http.middlewares.auth-strip.stripprefix.prefixes=/api
-      - traefik.http.middlewares.auth-strip.stripprefix.forceSlash=false
-      - traefik.http.services.auth.loadbalancer.server.port=3000
-    healthcheck:
-      test: ["CMD-SHELL", "bun -e \"fetch('http://127.0.0.1:'+(process.env.IDP_PORT||3000)+'/').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))\""]
-      interval: 10s
-      timeout: 3s
-      retries: 5
-      start_period: 15s
 
 volumes:
   postgres_data:

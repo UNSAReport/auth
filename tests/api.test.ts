@@ -59,18 +59,18 @@ describe('IDP API Endpoints E2E', () => {
     expect(body.keys[0].kty).toBe('RSA');
   });
 
-  test('POST /v1/auth/keys/rotate rejects unauthorized requests', async () => {
+  test('POST /v1/keys/rotate rejects unauthorized requests', async () => {
     const res = await app.fetch(
-      new Request('http://localhost:3000/v1/auth/keys/rotate', {
+      new Request('http://localhost:3000/v1/keys/rotate', {
         method: 'POST',
       }),
     );
     expect(res.status).toBe(401);
   });
 
-  test('POST /v1/auth/keys/rotate rotates key with valid admin key', async () => {
+  test('POST /v1/keys/rotate rotates key with valid admin key', async () => {
     const res = await app.fetch(
-      new Request('http://localhost:3000/v1/auth/keys/rotate', {
+      new Request('http://localhost:3000/v1/keys/rotate', {
         method: 'POST',
         headers: {
           'X-Admin-Key': config.adminApiKey,
@@ -83,16 +83,14 @@ describe('IDP API Endpoints E2E', () => {
     expect(body.key.kid).toBeDefined();
   });
 
-  test('GET /v1/auth/me returns 401 without auth header', async () => {
-    const res = await app.fetch(
-      new Request('http://localhost:3000/v1/auth/me'),
-    );
+  test('GET /v1/me returns 401 without auth header', async () => {
+    const res = await app.fetch(new Request('http://localhost:3000/v1/me'));
     expect(res.status).toBe(401);
   });
 
-  test('GET /v1/auth/me returns user details with valid JWT', async () => {
+  test('GET /v1/me returns user details with valid JWT', async () => {
     const res = await app.fetch(
-      new Request('http://localhost:3000/v1/auth/me', {
+      new Request('http://localhost:3000/v1/me', {
         headers: { Authorization: `Bearer ${jwtToken}` },
       }),
     );
@@ -103,9 +101,9 @@ describe('IDP API Endpoints E2E', () => {
     expect(body.auth_type).toBe('jwt');
   });
 
-  test('POST /v1/auth/pat creates a new PAT', async () => {
+  test('POST /v1/pat creates a new PAT', async () => {
     const res = await app.fetch(
-      new Request('http://localhost:3000/v1/auth/pat', {
+      new Request('http://localhost:3000/v1/pat', {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${jwtToken}`,
@@ -127,7 +125,7 @@ describe('IDP API Endpoints E2E', () => {
     const patId = body.pat.id;
 
     const meRes = await app.fetch(
-      new Request('http://localhost:3000/v1/auth/me', {
+      new Request('http://localhost:3000/v1/me', {
         headers: { Authorization: `Bearer ${patToken}` },
       }),
     );
@@ -137,7 +135,7 @@ describe('IDP API Endpoints E2E', () => {
     expect(meBody.auth_type).toBe('pat');
 
     const listRes = await app.fetch(
-      new Request('http://localhost:3000/v1/auth/pat', {
+      new Request('http://localhost:3000/v1/pat', {
         headers: { Authorization: `Bearer ${jwtToken}` },
       }),
     );
@@ -146,7 +144,7 @@ describe('IDP API Endpoints E2E', () => {
     expect(listBody.pats.some((p: PatItem) => p.id === patId)).toBe(true);
 
     const delRes = await app.fetch(
-      new Request(`http://localhost:3000/v1/auth/pat/${patId}`, {
+      new Request(`http://localhost:3000/v1/pat/${patId}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${jwtToken}` },
       }),
@@ -154,9 +152,9 @@ describe('IDP API Endpoints E2E', () => {
     expect(delRes.status).toBe(200);
   });
 
-  test('POST /v1/auth/refresh returns new access token and refresh token', async () => {
+  test('POST /v1/refresh returns new access token and refresh token', async () => {
     const res = await app.fetch(
-      new Request('http://localhost:3000/v1/auth/refresh', {
+      new Request('http://localhost:3000/v1/refresh', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ refresh_token: refreshToken }),
@@ -170,10 +168,10 @@ describe('IDP API Endpoints E2E', () => {
     expect(body.expires_in).toBe(config.accessTokenTtl);
   });
 
-  test('POST /v1/auth/logout revokes refresh token', async () => {
+  test('POST /v1/logout revokes refresh token', async () => {
     const newRfToken = await createRefreshToken(testUser.id);
     const logoutRes = await app.fetch(
-      new Request('http://localhost:3000/v1/auth/logout', {
+      new Request('http://localhost:3000/v1/logout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ refresh_token: newRfToken }),
@@ -182,7 +180,7 @@ describe('IDP API Endpoints E2E', () => {
     expect(logoutRes.status).toBe(200);
 
     const refreshRes = await app.fetch(
-      new Request('http://localhost:3000/v1/auth/refresh', {
+      new Request('http://localhost:3000/v1/refresh', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ refresh_token: newRfToken }),

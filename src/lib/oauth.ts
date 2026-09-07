@@ -68,7 +68,7 @@ export class GoogleOAuthProvider implements OAuthProvider {
   getAuthUrl(state: string, codeVerifier?: string): string {
     const params = new URLSearchParams({
       client_id: config.googleClientId,
-      redirect_uri: `${config.idpIssuer}/v1/auth/google/callback`,
+      redirect_uri: `${config.idpIssuer}/v1/google/callback`,
       response_type: 'code',
       scope: 'openid email profile',
       state,
@@ -98,7 +98,7 @@ export class GoogleOAuthProvider implements OAuthProvider {
       code,
       client_id: config.googleClientId,
       client_secret: config.googleClientSecret,
-      redirect_uri: `${config.idpIssuer}/v1/auth/google/callback`,
+      redirect_uri: `${config.idpIssuer}/v1/google/callback`,
       grant_type: 'authorization_code',
     };
     if (codeVerifier) {
@@ -155,7 +155,7 @@ export class GitHubOAuthProvider implements OAuthProvider {
   getAuthUrl(state: string): string {
     const params = new URLSearchParams({
       client_id: config.githubClientId,
-      redirect_uri: `${config.idpIssuer}/v1/auth/github/callback`,
+      redirect_uri: `${config.idpIssuer}/v1/github/callback`,
       scope: 'read:user user:email',
       state,
     });

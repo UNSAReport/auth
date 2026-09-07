@@ -36,10 +36,10 @@ getOrGenerateActiveKey().catch((err) => {
 });
 
 const v1 = new Hono();
-v1.route('/auth', authRouter);
-v1.route('/auth/pat', patRouter);
-v1.route('/auth/roles', rolesRouter);
-v1.route('/auth/keys', keysRouter);
+v1.route('/', authRouter);
+v1.route('/pat', patRouter);
+v1.route('/roles', rolesRouter);
+v1.route('/keys', keysRouter);
 
 app.route('/v1', v1);
 app.route('/', jwksRouter);

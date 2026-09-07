@@ -49,7 +49,7 @@ describe('Role Management Endpoints & Integration', () => {
 
   test('1. Assign role to user — success', async () => {
     const res = await app.fetch(
-      new Request('http://localhost:3000/v1/auth/roles', {
+      new Request('http://localhost:3000/v1/roles', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -73,7 +73,7 @@ describe('Role Management Endpoints & Integration', () => {
 
   test('2. Assign role — duplicate (upsert updates role)', async () => {
     const res = await app.fetch(
-      new Request('http://localhost:3000/v1/auth/roles', {
+      new Request('http://localhost:3000/v1/roles', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -95,7 +95,7 @@ describe('Role Management Endpoints & Integration', () => {
 
   test('3. Revoke role — success', async () => {
     await app.fetch(
-      new Request('http://localhost:3000/v1/auth/roles', {
+      new Request('http://localhost:3000/v1/roles', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -110,7 +110,7 @@ describe('Role Management Endpoints & Integration', () => {
     );
 
     const res = await app.fetch(
-      new Request('http://localhost:3000/v1/auth/roles', {
+      new Request('http://localhost:3000/v1/roles', {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -130,7 +130,7 @@ describe('Role Management Endpoints & Integration', () => {
 
   test('4. Revoke role — not found', async () => {
     const res = await app.fetch(
-      new Request('http://localhost:3000/v1/auth/roles', {
+      new Request('http://localhost:3000/v1/roles', {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -150,7 +150,7 @@ describe('Role Management Endpoints & Integration', () => {
 
   test('5. List roles for sub-app — returns all users with roles', async () => {
     const res = await app.fetch(
-      new Request('http://localhost:3000/v1/auth/roles/npm-registry', {
+      new Request('http://localhost:3000/v1/roles/npm-registry', {
         headers: {
           'X-Admin-Key': config.adminApiKey,
         },
@@ -166,7 +166,7 @@ describe('Role Management Endpoints & Integration', () => {
 
   test('6. List roles for user — returns all sub-app roles', async () => {
     const res = await app.fetch(
-      new Request(`http://localhost:3000/v1/auth/roles/user/${userA.id}`, {
+      new Request(`http://localhost:3000/v1/roles/user/${userA.id}`, {
         headers: {
           'X-Admin-Key': config.adminApiKey,
         },
@@ -186,7 +186,7 @@ describe('Role Management Endpoints & Integration', () => {
 
   test('7. Non-admin attempting admin operation — 403', async () => {
     const res = await app.fetch(
-      new Request('http://localhost:3000/v1/auth/roles', {
+      new Request('http://localhost:3000/v1/roles', {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${jwtTokenUserB}`,
@@ -207,7 +207,7 @@ describe('Role Management Endpoints & Integration', () => {
 
   test('8. Admin-key bypass — success', async () => {
     const res = await app.fetch(
-      new Request('http://localhost:3000/v1/auth/roles', {
+      new Request('http://localhost:3000/v1/roles', {
         method: 'POST',
         headers: {
           'X-Admin-Key': config.adminApiKey,
@@ -240,7 +240,7 @@ describe('Role Management Endpoints & Integration', () => {
     expect(verified.roles['npm-registry']).toBe('admin');
   });
 
-  test('10. /v1/auth/me returns roles', async () => {
+  test('10. /v1/me returns roles', async () => {
     const rolesA = await getUserRoles(userA.id);
     const updatedTokenUserA = await signAccessToken({
       sub: userA.id,
@@ -250,7 +250,7 @@ describe('Role Management Endpoints & Integration', () => {
     });
 
     const res = await app.fetch(
-      new Request('http://localhost:3000/v1/auth/me', {
+      new Request('http://localhost:3000/v1/me', {
         headers: { Authorization: `Bearer ${updatedTokenUserA}` },
       }),
     );
@@ -261,7 +261,7 @@ describe('Role Management Endpoints & Integration', () => {
     expect(body.roles['npm-registry']).toBe('admin');
   });
 
-  test('11. /v1/auth/roles/me returns current user roles', async () => {
+  test('11. /v1/roles/me returns current user roles', async () => {
     const rolesA = await getUserRoles(userA.id);
     const updatedTokenUserA = await signAccessToken({
       sub: userA.id,
@@ -271,7 +271,7 @@ describe('Role Management Endpoints & Integration', () => {
     });
 
     const res = await app.fetch(
-      new Request('http://localhost:3000/v1/auth/roles/me', {
+      new Request('http://localhost:3000/v1/roles/me', {
         headers: { Authorization: `Bearer ${updatedTokenUserA}` },
       }),
     );
