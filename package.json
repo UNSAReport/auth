@@ -1,12 +1,27 @@
 {
   "name": "registry",
+  "type": "module",
   "scripts": {
-    "dev": "bun run --hot src/index.ts"
+    "dev": "bun run --hot src/index.ts",
+    "db:migrate": "bun run src/db/migrate.ts",
+    "db:migrate:prod": "bun ./dist/db/migrate.js",
+    "check": "bun run check:ts && bun run check:biome",
+    "check:ts": "tsc --noEmit",
+    "check:biome": "biome check .",
+    "lint": "bun run check:ts && biome lint .",
+    "format": "biome format --write ."
   },
   "dependencies": {
-    "hono": "^4.13.4"
+    "drizzle-orm": "^0.45.2",
+    "hono": "^4.13.4",
+    "jose": "^6.2.10",
+    "postgres": "^3.4.9"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@biomejs/biome": "^2.5.10",
+    "@types/bun": "latest",
+    "@types/node": "^26.3.0",
+    "drizzle-kit": "^0.31.10",
+    "typescript": "^5.7.3"
   }
 }

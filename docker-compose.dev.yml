@@ -1,0 +1,49 @@
+name: unsareport-auth-dev
+
+networks:
+  unsareport-dev:
+    external: true
+
+services:
+  traefik:
+    image: traefik:v3.3
+    container_name: auth-traefik
+    command:
+      - --providers.docker=true
+      - --providers.docker.exposedByDefault=false
+      - --providers.docker.network=unsareport-dev
+      - --providers.file.filename=/etc/traefik/dynamic.yml
+      - --providers.file.watch=true
+      - --entryPoints.web.address=:80
+      - --log.level=INFO
+      - --api.dashboard=true
+      - --api.insecure=true
+    ports:
+      - "9876:80"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik-dynamic.yml:/etc/traefik/dynamic.yml:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks: [unsareport-dev]
+
+  postgres-auth:
+    image: postgres:16-alpine
+    container_name: auth-postgres
+    environment:
+      POSTGRES_USER: idp
+      POSTGRES_PASSWORD: idppassword
+      POSTGRES_DB: idp_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks: [unsareport-dev]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U idp -d idp_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:

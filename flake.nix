@@ -41,6 +41,8 @@
           packages = pkgs.lib.flatten [
             (with pkgs; [
               bun
+              sops
+              just
             ])
             (with unstable; [
             ])

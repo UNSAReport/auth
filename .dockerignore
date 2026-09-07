@@ -1,0 +1,14 @@
+node_modules
+npm-debug.log
+.git
+.gitignore
+.github
+.direnv
+.env
+.env.*
+*.tsbuildinfo
+dist
+coverage
+tests
+*.md
+biome.json
